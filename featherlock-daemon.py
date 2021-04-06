@@ -64,3 +64,5 @@ def root():
 
             else:
                 return jsonify({"action": "status", "path": data["path"], "lock-engaged": False, "message": "Lock disengaged."})
+
+app.run("127.0.0.1", 1647)
