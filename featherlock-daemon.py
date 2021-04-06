@@ -2,7 +2,7 @@
 # FeatherLock written by Luke Darling.
 # All rights reserved.
 
-from bottle import route, run, template, request
+from bottle import route, run, request
 import uuid, json
 
 lock = {}
