@@ -75,4 +75,4 @@ def root():
     else:
         return json.dumps({"message": "Please specify an action."})
 
-run(host="127.0.0.1", port=1647)
+run(host="127.0.0.1", port=1647, server="wsgiref")
