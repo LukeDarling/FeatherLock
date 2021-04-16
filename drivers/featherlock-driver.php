@@ -4,31 +4,28 @@
 
 class FeatherLock {
 
-    private $path;
+    private $file;
     private $token;
 
     function __construct(string $filename) {
-        global $path, $token;
-        $path = strtolower($filename);
-        $token = null;
+        $this->path = strtolower($filename);
+        $this->token = null;
     }
 
     function lock() {
 
-        global $path, $token;
-
-        if(!is_null($token)) {
+        if(!is_null($this->token)) {
             throw new Exception("Lock already acquired.");
         }
 
         while(true) {
-            $result = @file_get_contents("http://127.0.0.1:1647/?action=lock&path=" . urlencode($path));
+            $result = @file_get_contents("http://127.0.0.1:1647/?action=lock&path=" . urlencode($this->file));
             if($result === false) {
                 throw new Exception("Could not connect to FeatherLock daemon.");
             }
             $data = json_decode($result, true);
             if($data["lock-acquired"]) {
-                $token = $data["token"];
+                $this->token = $data["token"];
                 return;
             }
         }
@@ -37,25 +34,18 @@ class FeatherLock {
 
     function unlock() {
 
-        global $path, $token;
-
-        $failures = 0;
-
-        if(is_null($token)) {
+        if(is_null($this->token)) {
             throw new Exception("Lock not acquired, so not released.");
         }
 
         while(true) {
-            $result = @file_get_contents("http://127.0.0.1:1647/?action=unlock&path=" . urlencode($path) . "&token=" . $token);
+            $result = @file_get_contents("http://127.0.0.1:1647/?action=unlock&path=" . urlencode($this->file) . "&token=" . $this->token);
             if($result === false) {
-                $failures++;
-                if($failures >= 3) {
-                    throw new Exception("Could not connect to FeatherLock daemon.");
-                }
+                throw new Exception("Could not connect to FeatherLock daemon.");
             }
             $lock = json_decode($result, true);
             if($lock["lock-released"]) {
-                $token = null;
+                $this->token = null;
                 return;
             }
         }
@@ -69,24 +59,21 @@ class FeatherFile {
     private $file;
 
     function __construct(string $filename) {
-        global $lock, $file;
-        $file = $filename;
-        $lock = new FeatherLock($filename);
+        $this->file = $filename;
+        $this->lock = new FeatherLock($filename);
     }
 
     function read() {
-        global $lock, $file;
-        $lock->lock();
-        $result = file_get_contents($file);
-        $lock->unlock();
+        $this->lock->lock();
+        $result = file_get_contents($this->file);
+        $this->lock->unlock();
         return $result;
     }
 
-    function write(string $data) {
-        global $lock, $file;
-        $lock->lock();
-        $result = file_put_contents($file, $data);
-        $lock->unlock();
+    function write($data) {
+        $this->lock->lock();
+        $result = file_put_contents($this->file, $data);
+        $this->lock->unlock();
         return $result;
     }
 

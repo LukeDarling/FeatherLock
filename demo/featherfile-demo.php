@@ -2,7 +2,7 @@
 // Written by Luke Darling.
 // All rights reserved.
 
-// This demo demonstrates swapping the contents of two files while using FeatherLock to
+// This demo demonstrates swapping the contents of two files while using the FeatherFile wrapper to
 // protect the files from other FeatherLock-complient concurrent processes
 
 // An instance of the FeatherLock daemon must be running on the server in order for this demo to work
@@ -14,30 +14,22 @@ header("Content-type: text/plain; charset=UTF-8");
 require_once("../drivers/featherlock-driver.php");
 
 // Prepare to access a file shared with another application
-$myFile = "test.txt";
-$myLock = new FeatherLock($myFile);
+$myFile = new FeatherFile("test.txt");
 
 // Read some data from a file safely
-$myLock->lock();
-$myData = file_get_contents($myFile);
-$myLock->unlock();
+$myData = $myFile->read();
 
 // Prepare to access another file shared with another application
-$anotherFile = "test.json";
-$anotherLock = new FeatherLock($anotherFile);
+$anotherFile = new FeatherFile("test.json");
 
 // Read the original data from another file and replace it with some new data
-$anotherLock->lock();
-$moreData = file_get_contents($anotherFile);
+$moreData = $anotherFile->read();
 // This application can do as many read/write operations as you need it to while it
 // has the lock, but other applications are forced to wait until you unlock the file
-file_put_contents($anotherFile, $myData);
-$anotherLock->unlock();
+$anotherFile->write($myData);
 
 // Write some data to the original file safely
-$myLock->lock();
-file_put_contents($myFile, $moreData);
-$myLock->unlock();
+$myFile->write($moreData);
 
 print "  My data: " . $myData . "\n";
 print "More data: " . $moreData;
