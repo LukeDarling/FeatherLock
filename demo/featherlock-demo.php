@@ -1,5 +1,8 @@
 <?php
 
+// Set the content-type header
+header("Content-type: text/plain; charset=UTF-8");
+
 // Include the driver
 require_once("../drivers/featherlock-driver.php");
 
@@ -29,5 +32,5 @@ $myLock->lock();
 file_put_contents($myFile, $moreData);
 $myLock->unlock();
 
-print "My data: " . $myData;
-print "More data: " . $moreData;
+print "My data: " . $myData . "\n";
+print "More data: " . json_encode($moreData);
