@@ -28,3 +28,6 @@ $anotherLock->unlock();
 $myLock->lock();
 file_put_contents($myFile, $moreData);
 $myLock->unlock();
+
+print "My data: " . $myData;
+print "More data: " . $moreData;
