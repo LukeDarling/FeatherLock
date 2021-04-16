@@ -1,21 +1,21 @@
 <?php
+// Written by Luke Darling.
+// All rights reserved.
 
-class Lock {
+class FeatherLock {
 
-    public $path;
-    public $token;
+    private $path;
+    private $token;
 
-    function __construct(string $file) {
+    function __construct(string $filename) {
         global $path, $token;
-        $path = strtolower($file);
+        $path = strtolower($filename);
         $token = null;
     }
 
     function lock() {
 
         global $path, $token;
-
-        $failures = 0;
 
         if(!is_null($token)) {
             throw new Exception("Lock already acquired.");
@@ -24,10 +24,7 @@ class Lock {
         while(true) {
             $result = @file_get_contents("http://127.0.0.1:1647/?action=lock&path=" . urlencode($path));
             if($result === false) {
-                $failures++;
-                if($failures >= 3) {
-                    throw new Exception("Could not connect to FeatherLock daemon.");
-                }
+                throw new Exception("Could not connect to FeatherLock daemon.");
             }
             $data = json_decode($result, true);
             if($data["lock-acquired"]) {
@@ -62,6 +59,43 @@ class Lock {
                 return;
             }
         }
+    }
+
+}
+
+class FeatherFile {
+
+    private $lock;
+    private $file;
+
+    function __construct(string $filename) {
+        global $lock, $file;
+        $file = $filename;
+        $lock = new FeatherLock($filename);
+    }
+
+    function read() {
+        global $lock, $file;
+        $lock->lock();
+        $result = file_get_contents($file);
+        $lock->unlock();
+        return $result;
+    }
+
+    function write(string $data) {
+        global $lock, $file;
+        $lock->lock();
+        $result = file_put_contents($file, $data);
+        $lock->unlock();
+        return $result;
+    }
+
+    function readJSON() {
+        return json_decode($this->read(), true);
+    }
+
+    function writeJSON($data) {
+        return $this->write(json_encode($data));
     }
 
 }
