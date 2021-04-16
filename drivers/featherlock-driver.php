@@ -2,8 +2,8 @@
 
 class Lock {
 
-    public string $path;
-    public string $token;
+    public $path;
+    public $token;
 
     function __construct(string $file) {
         global $path, $token;
@@ -22,7 +22,7 @@ class Lock {
         }
 
         while(true) {
-            $result = file_get_contents("http://127.0.0.1:1647/?action=lock&path=" . urlencode($path));
+            $result = @file_get_contents("http://127.0.0.1:1647/?action=lock&path=" . urlencode($path));
             if($result === false) {
                 $failures++;
                 if($failures >= 3) {
@@ -49,7 +49,7 @@ class Lock {
         }
 
         while(true) {
-            $result = file_get_contents("http://127.0.0.1:1647/?action=unlock&path=" . urlencode($path) . "&token=" . $token);
+            $result = @file_get_contents("http://127.0.0.1:1647/?action=unlock&path=" . urlencode($path) . "&token=" . $token);
             if($result === false) {
                 $failures++;
                 if($failures >= 3) {
