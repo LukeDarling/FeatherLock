@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# FeatherLock written by Luke Darling.
+# Written by Luke Darling.
 # All rights reserved.
 
 from bottle import route, run, request
