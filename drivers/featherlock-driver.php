@@ -8,7 +8,7 @@ class FeatherLock {
     private $token;
 
     function __construct(string $filename) {
-        $this->path = strtolower($filename);
+        $this->file = realpath($filename);
         $this->token = null;
     }
 
@@ -59,8 +59,8 @@ class FeatherFile {
     private $file;
 
     function __construct(string $filename) {
-        $this->file = $filename;
-        $this->lock = new FeatherLock($filename);
+        $this->file = realpath($filename);
+        $this->lock = new FeatherLock($this->file);
     }
 
     function read() {

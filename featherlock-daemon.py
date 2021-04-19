@@ -7,6 +7,12 @@ import uuid, json
 
 lock = {}
 
+def isTokenUnique(token) -> bool:
+    for key in lock:
+        if lock[key] == token:
+            return False
+    return True
+
 @route("/")
 def root():
 
@@ -26,10 +32,8 @@ def root():
             else:
                 while True:
                     token = uuid.uuid1().hex.upper()
-                    for p in lock:
-                        if lock[p] == token:
-                            continue
-                    break
+                    if isTokenUnique(token):
+                        break
 
             if data["path"] in lock:
                 if lock[data["path"]] == token:

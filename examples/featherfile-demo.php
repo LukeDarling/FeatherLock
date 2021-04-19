@@ -3,7 +3,7 @@
 // All rights reserved.
 
 // This demo demonstrates swapping the contents of two files while using the FeatherFile wrapper to
-// protect the files from other FeatherLock-complient concurrent processes
+// protect the files from other FeatherLock-compliant concurrent processes
 
 // An instance of the FeatherLock daemon must be running on the server in order for this demo to work
 
@@ -24,8 +24,6 @@ $anotherFile = new FeatherFile("test.json");
 
 // Read the original data from another file and replace it with some new data
 $moreData = $anotherFile->read();
-// This application can do as many read/write operations as you need it to while it
-// has the lock, but other applications are forced to wait until you unlock the file
 $anotherFile->write($myData);
 
 // Write some data to the original file safely
