@@ -72,9 +72,8 @@ class FeatherFile {
 
     function write($data) {
         $this->lock->lock();
-        $result = file_put_contents($this->file, $data);
+        file_put_contents($this->file, $data);
         $this->lock->unlock();
-        return $result;
     }
 
     function readJSON() {
