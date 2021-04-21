@@ -2,7 +2,7 @@
 # Written by Luke Darling.
 # All rights reserved.
 
-import os, time, requests, urllib.parse
+import os, requests, json, urllib.parse
 
 
 class FeatherLock:
@@ -39,21 +39,27 @@ class FeatherLock:
             except:
                 raise Exception("Could not connect to FeatherLock daemon.")
                 
-# class FeatherFile:
+class FeatherFile:
 
-#     def __init__(self, filename: str):
-#         self.file = os.path.abspath(filename)
-#         self.lock = FeatherLock(self.file);
+    def __init__(self, filename: str):
+        self.file = os.path.abspath(filename)
+        self.lock = FeatherLock(self.file);
 
-#     def read(self):
-#         self.lock.lock()
-#         with open(self.file, "r") as f:
-#             result = f.read()
-#         self.lock.unlock()
-#         return result
+    def read(self) -> str:
+        self.lock.lock()
+        with open(self.file, "r") as f:
+            result = f.read()
+        self.lock.unlock()
+        return result
         
-#     def write(self, data):
-#         self.lock.lock()
-#         with open(self.file, "w") as f:
-#             f.write(data)
-#         self.lock.unlock()
+    def write(self, data: str) -> None:
+        self.lock.lock()
+        with open(self.file, "w") as f:
+            f.write(data)
+        self.lock.unlock()
+
+    def readJSON(self) -> str:
+        return json.loads(self.read())
+
+    def writeJSON(self, data: str) -> None:
+        self.write(json.dumps(data))

@@ -11,7 +11,7 @@
 header("Content-type: text/plain; charset=UTF-8");
 
 // Include the driver
-require_once("../drivers/featherlock-driver.php");
+require_once("../drivers/featherlock_driver.php");
 
 // Prepare to access a file shared with another application
 $myFile = "test.txt";

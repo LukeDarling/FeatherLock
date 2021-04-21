@@ -2,12 +2,13 @@
 # Written by Luke Darling.
 # All rights reserved.
 
-import os, sys
-
 # This demo demonstrates swapping the contents of two files while using FeatherLock to
 # protect the files from other FeatherLock-complient concurrent processes
 
 # An instance of the FeatherLock daemon must be running on the server in order for this demo to work
+
+# Imports
+import os, sys
 
 # Include the driver
 sys.path.append(os.path.abspath("../drivers/"))
